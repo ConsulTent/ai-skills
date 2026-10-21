@@ -1,0 +1,13 @@
+{
+  "name": "consultent-ai-skills",
+  "owner": { "name": "ConsulTent Pte. Ltd." },
+  "description": "AI agent skills from ConsulTent Pte. Ltd.",
+  "plugins": [
+    {
+      "name": "ai-skills",
+      "source": "./plugins/ai-skills",
+      "description": "Homebrew publishing: taps, formula authoring, tap CI, homebrew-core submission",
+      "version": "0.1.0"
+    }
+  ]
+}

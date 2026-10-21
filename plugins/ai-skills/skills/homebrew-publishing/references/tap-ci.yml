@@ -1,0 +1,39 @@
+# Official brew tap-new test-bot CI, adapted (proven 2026-10, brew 7.x).
+# Save as .github/workflows/ci.yml in the tap repository.
+name: ci
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test-bot:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest]
+        include:
+          - os: ubuntu-latest
+            container:
+              image: ghcr.io/homebrew/brew:main
+              options: --privileged
+    runs-on: ${{ matrix.os }}
+    container: ${{ fromJSON(toJSON(matrix.container)) }}
+    permissions:
+      actions: read
+      checks: read
+      contents: read
+      pull-requests: read
+    steps:
+      # Pin by SHA with a tag comment; to re-pin, list current tags and dereference:
+      #   gh api repos/Homebrew/actions --jq '.[].name'   (then get the commit SHA behind the tag)
+      - name: Set up Homebrew
+        uses: Homebrew/actions/setup-homebrew@<full-sha> # <tag>
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - run: brew test-bot --only-cleanup-before
+      - run: brew test-bot --only-setup
+      - run: brew test-bot --only-tap-syntax
+      # Builds/tests formulae ONLY on pull_request events with a formula diff;
+      # push events report "testing_formulae (none)" and skip.
+      - run: brew test-bot --only-formulae

@@ -1,0 +1,10 @@
+{
+  "name": "ai-skills",
+  "version": "0.1.0",
+  "description": "AI agent skills from ConsulTent: Homebrew publishing (taps, formulae, tap CI, homebrew-core submission)",
+  "author": { "name": "ConsulTent Pte. Ltd.", "url": "https://consultent.ltd" },
+  "homepage": "https://github.com/ConsulTent/ai-skills",
+  "repository": "https://github.com/ConsulTent/ai-skills",
+  "license": "MIT",
+  "skills": "./skills"
+}
