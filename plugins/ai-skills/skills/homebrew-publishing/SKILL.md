@@ -5,7 +5,7 @@ description: Publish, update, or debug Homebrew packages — create a third-part
 
 # Homebrew Publishing
 
-Homebrew's docs lag its behavior (verified 2026-10: org-wide `master`→`main` branch renames left documented `@master` refs dead; path-form audit/install disabled; tap CI only builds formulae on pull-request events). This skill encodes what actually works and names the authoritative source to check when behavior surprises.
+Homebrew's docs lag its behavior (verified 2026-10: org-wide `master`→`main` branch renames hard-coded into doc examples; path-form audit/install disabled; tap CI only builds formulae on pull-request events). This skill encodes what actually works and names the authoritative source to check when behavior surprises.
 
 ## 0. Route decision: homebrew-core vs third-party tap
 
@@ -75,9 +75,43 @@ gh run watch <run-id> --repo OWNER/homebrew-<name> --exit-status
 
 ## 3. Version bumps (the recurring flow)
 
+**Automated for ConsulTent/mcpcli:** the tap bump runs itself — mcpcli's `release-build.yml` `sync-homebrew-tap` job reads the release's four `mcp-<os>-<arch>` digests from the release API, edits the tap's `Formula/mcpcli.rb`, opens the PR with the disclosure paragraph, and merges when tap CI is green. Dispatch `release-build.yml` with the `tag` input to backfill a missed release; the manual flow above stays for other repos.
+
+### Source formula
+
 1. Tag the release upstream.
 2. Branch, update `url` (new tag) and `sha256` in `Formula/<formula>.rb`.
 3. Push branch → open PR → CI builds/tests both platforms (the PR event IS the gate) → squash-merge with message `<formula> <version>`.
+
+### Binary formula (serve pre-built release assets)
+
+When upstream publishes attested per-platform binaries, a binary formula installs in seconds with zero build deps (and drops the brew-Go-version coupling). Structure:
+
+```ruby
+on_macos do
+  on_arm do
+    url "https://github.com/OWNER/REPO/releases/download/vX.Y.Z/<bin>-darwin-arm64"
+    sha256 "..."
+  end
+  on_intel do ... end
+end
+on_linux do
+  on_arm do ... end
+  on_intel do ... end
+end
+
+def install
+  binary = Dir.children(".").grep(/\A<bin>-/).first
+  bin.install binary => "<bin>"
+end
+```
+
+- `on_*` blocks are NOT allowed inside `def install` — the glob picks whichever asset the platform block downloaded.
+- Checksums come from the release API without downloading anything: `gh api repos/OWNER/REPO/releases/tags/vX.Y.Z --jq '.assets[] | .name + " " + .digest'` (fall back to hashing a download only if a digest is null).
+- Version derives from the URL; the binaries' embedded `--version` stamp satisfies the standard test block.
+- A bump touches 4 URL+sha pairs — script it after the first manual bump hurts once.
+- `brew audit` may grumble about pre-built binaries in taps; test-bot's PR run is the empirical gate — if it flags, apply the documented audit exception rather than reverting to source.
+- Bottles are the alternative (brew-native pre-builds) but need per-platform bottle builds, a root_url host, and per-version bottle blocks — machinery a binary formula doesn't need when release assets already exist.
 
 ## 4. homebrew-core, once §0 passes
 
