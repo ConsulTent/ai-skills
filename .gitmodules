@@ -1,0 +1,12 @@
+[submodule "plugins/sccgo/vendor/cc-skills-golang"]
+	path = plugins/sccgo/vendor/cc-skills-golang
+	url = https://github.com/samber/cc-skills-golang
+[submodule "plugins/sccgo/vendor/impeccable"]
+	path = plugins/sccgo/vendor/impeccable
+	url = https://github.com/pbakaus/impeccable
+[submodule "plugins/sccgo/vendor/ponytail"]
+	path = plugins/sccgo/vendor/ponytail
+	url = https://github.com/DietrichGebert/ponytail
+[submodule "plugins/sccgo/vendor/hallmark"]
+	path = plugins/sccgo/vendor/hallmark
+	url = https://github.com/Nutlope/hallmark

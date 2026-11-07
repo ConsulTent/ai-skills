@@ -9,7 +9,19 @@ Claude Code plugin, a ZCode plugin, or copied into any agent that supports the
 | Skill | What it does |
 |---|---|
 | `homebrew-publishing` | Publish, update, or debug Homebrew packages: taps, formula authoring (Go CLIs and others), tap CI with `brew test-bot`, version bumps, homebrew-core eligibility and submission, the AI/LLM disclosure policy |
-| `sccgo` | The golang software factory: drive a golang plan from root-caused intent to a CONVERGED, reviewed state via the used-skills protocol, then hand off to SDD execution. Ships `workflows/update-skills.dwf.ts` — a ZCode dynamic workflow that syncs its skill families (samber-cc golang, impeccable, ponytail, hallmark) from their upstream git repos |
+| `sccgo` | **SCCGO — Software Convergence Crafting for Go.** The golang software factory: drive a golang plan from root-caused intent to a CONVERGED, reviewed state via the used-skills protocol, then hand off to SDD execution. Ships `workflows/update-skills.dwf.ts` — a ZCode dynamic workflow that syncs its skill families (samber-cc golang, impeccable, ponytail, hallmark) from their upstream git repos |
+
+### sccgo modes and vendored battery
+
+The sccgo plugin ships two skills: `$sccgo` (full — every samber-cc golang skill is seeded
+into USED_SKILLS.json; each seeded skill's own run reports its fit) and `$sccgo-partial`
+(the samber/* core runs always; the rest join as the plan's surfaces demand). Claude Code
+qualifies with `:` (`sccgo:sccgo`, `sccgo:sccgo-partial`); ZCode flattens with `-`.
+
+The battery's upstream repos are vendored as git submodules under `plugins/sccgo/vendor/`
+— provenance reference only, not installed as plugin skills; clone with
+`--recurse-submodules`. A weekly workflow (`.github/workflows/update-3p-skills.yml`) bumps
+the submodule pins to upstream tips and patch-bumps the sccgo version.
 
 ## Install
 

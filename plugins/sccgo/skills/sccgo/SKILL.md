@@ -1,6 +1,6 @@
 ---
 name: sccgo
-description: The golang software factory — drive a golang plan from root-caused intent to a CONVERGED, reviewed state via the used-skills protocol (USED_SKILLS.json, ponytail-precedence combined runs, pass/remove iterations, zh-CN compactions), then hand off to SDD execution. Use when the operator asks to plan, review, or polish a golang change with the skill battery, or to converge an existing plan.
+description: The golang software factory — drive a golang plan from root-caused intent to a CONVERGED, reviewed state via the used-skills protocol (USED_SKILLS.json, ponytail-precedence combined runs, pass/remove iterations, zh-CN compactions), then hand off to SDD execution. Full battery: every samber-cc golang skill is seeded into USED_SKILLS.json; each seeded skill's own run reports its fit. Use when the operator asks to plan, review, or polish a golang change with the skill battery, or to converge an existing plan.
 ---
 
 # SCCGO — the golang software factory (plan-review SDLC)
@@ -51,7 +51,7 @@ protocol is a defect.
 
 Location: the SDD workspace for this plan (`.superpowers/sdd/<plan>/USED_SKILLS.json`).
 
-**Seed** it before pass 1 with EVERY review skill the plan will use:
+**Seed** it before pass 1 with EVERY skill in the battery — the golang catalog unconditionally, the craft lenses per their activation rule:
 
 ```json
 {
@@ -96,10 +96,12 @@ subagents; it never re-runs the implementer's tests.
 
 The seed inventory — the complete samber-cc golang catalog
 (github.com/samber/cc-skills-golang). EVERY golang skill in this battery is a samber-cc
-skill; there are no house golang skills. The samber/* core runs always; the rest join as
-the plan's surfaces demand:
+skill; there are no house golang skills. Every skill below is seeded into USED_SKILLS.json
+— none optional, none filtered by the plan's surfaces in advance; a seeded skill's own run
+reports whether it fits the task, and the convergence loop settles it (no plan change →
+removed; findings → it keeps running):
 
-- **The samber/\* core** (always, one run each per pass):
+- **The samber/\* core**:
   `golang-samber-do` (dependency homes, construction, lifetimes, seams, contract blast
   radius, test construction) · `golang-samber-hot` (hot values, cache-vs-source coherence,
   staleness windows, invalidation) · `golang-samber-lo` (slice/map shapes, reuse, the
@@ -121,14 +123,11 @@ the plan's surfaces demand:
 - **Project Setup**: `golang-cli` · `golang-continuous-integration` ·
   `golang-dependency-management` · `golang-gopls` · `golang-pkg-go-dev` ·
   `golang-popular-libraries` · `golang-project-layout` · `golang-stay-updated`.
-- **APIs**: `golang-grpc` · `golang-graphql` · `golang-swagger` (when the plan touches the
-  matching surface).
-- **Dependency Injection**: `golang-google-wire` · `golang-uber-dig` · `golang-uber-fx`
-  (when a DI framework is in play, alongside `golang-dependency-injection` /
-  `golang-samber-do`).
+- **APIs**: `golang-grpc` · `golang-graphql` · `golang-swagger`.
+- **Dependency Injection**: `golang-google-wire` · `golang-uber-dig` · `golang-uber-fx`.
 - **Frameworks**: `golang-spf13-cobra` · `golang-spf13-viper` (CLI command trees, config
   layering).
-- **Testing**: `golang-stretchr-testify` (when the plan's tests use testify).
+- **Testing**: `golang-stretchr-testify`.
 - **Orchestrator**: `golang-how-to` — the routing aid that pairs lenses; consulted for
   lens selection, never seeded as its own review run.
 - (`golang-temporal` is announced upstream as a to-do; excluded until it exists.)
