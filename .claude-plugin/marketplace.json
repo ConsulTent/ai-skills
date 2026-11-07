@@ -8,6 +8,12 @@
       "source": "./plugins/ai-skills",
       "description": "Homebrew publishing: taps, formula authoring, tap CI, homebrew-core submission",
       "version": "0.1.0"
+    },
+    {
+      "name": "sccgo",
+      "source": "./plugins/sccgo",
+      "description": "The golang software factory: drive a golang plan from root-caused intent to a CONVERGED, reviewed state via the used-skills protocol, then hand off to SDD execution",
+      "version": "0.1.3"
     }
   ]
 }
