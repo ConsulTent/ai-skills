@@ -10,3 +10,9 @@
 [submodule "plugins/sccgo/vendor/hallmark"]
 	path = plugins/sccgo/vendor/hallmark
 	url = https://github.com/Nutlope/hallmark
+[submodule "plugins/mobile-convergence/vendor/agent-plugins"]
+	path = plugins/mobile-convergence/vendor/agent-plugins
+	url = https://github.com/flutter/agent-plugins
+[submodule "plugins/mobile-convergence/vendor/dart-skills"]
+	path = plugins/mobile-convergence/vendor/dart-skills
+	url = https://github.com/dart-lang/skills

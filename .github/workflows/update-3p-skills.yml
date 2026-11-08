@@ -14,33 +14,35 @@ jobs:
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
 
-      - name: Move vendor submodules to upstream tips
+      - name: Move vendor submodules to upstream tips and patch-bump moved plugins
         id: sync
         run: |
-          git submodule update --init --remote plugins/sccgo/vendor
-          if git diff --quiet HEAD -- plugins/sccgo/vendor; then
+          moved=()
+          for plugin in sccgo mobile-convergence; do
+            git submodule update --init --remote "plugins/$plugin/vendor"
+            if git diff --quiet HEAD -- "plugins/$plugin/vendor"; then
+              continue
+            fi
+            V=$(jq -r '.version' "plugins/$plugin/.claude-plugin/plugin.json")
+            NV=$(jq -nr --arg v "$V" '$v | split(".") | .[2] |= (tonumber + 1 | tostring) | join(".")')
+            jq --indent 2 --arg nv "$NV" '.version = $nv' "plugins/$plugin/.claude-plugin/plugin.json" > /tmp/plugin.json
+            mv /tmp/plugin.json "plugins/$plugin/.claude-plugin/plugin.json"
+            jq --indent 2 --arg nv "$NV" --arg name "$plugin" '(.plugins[] | select(.name == $name) | .version) = $nv' .claude-plugin/marketplace.json > /tmp/marketplace.json
+            mv /tmp/marketplace.json .claude-plugin/marketplace.json
+            moved+=("$plugin v$NV")
+          done
+          if [ ${#moved[@]} -eq 0 ]; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
           else
             echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "summary=${moved[*]}" >> "$GITHUB_OUTPUT"
           fi
-
-      - name: Patch-bump sccgo version
-        if: steps.sync.outputs.changed == 'true'
-        id: bump
-        run: |
-          V=$(jq -r '.version' plugins/sccgo/.claude-plugin/plugin.json)
-          NV=$(jq -nr --arg v "$V" '$v | split(".") | .[2] |= (tonumber + 1 | tostring) | join(".")')
-          jq --indent 2 --arg nv "$NV" '.version = $nv' plugins/sccgo/.claude-plugin/plugin.json > /tmp/plugin.json
-          jq --indent 2 --arg nv "$NV" '(.plugins[] | select(.name == "sccgo") | .version) = $nv' .claude-plugin/marketplace.json > /tmp/marketplace.json
-          mv /tmp/plugin.json plugins/sccgo/.claude-plugin/plugin.json
-          mv /tmp/marketplace.json .claude-plugin/marketplace.json
-          echo "version=$NV" >> "$GITHUB_OUTPUT"
 
       - name: Commit and push
         if: steps.sync.outputs.changed == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add plugins/sccgo/vendor plugins/sccgo/.claude-plugin/plugin.json .claude-plugin/marketplace.json
-          git commit -m "sccgo: update vendored skills (v${{ steps.bump.outputs.version }})"
+          git add plugins/sccgo/vendor plugins/mobile-convergence/vendor plugins/*/.claude-plugin/plugin.json .claude-plugin/marketplace.json
+          git commit -m "update vendored skills (${{ steps.sync.outputs.summary }})"
           git push origin main

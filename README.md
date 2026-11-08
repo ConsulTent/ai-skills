@@ -10,18 +10,26 @@ Claude Code plugin, a ZCode plugin, or copied into any agent that supports the
 |---|---|
 | `homebrew-publishing` | Publish, update, or debug Homebrew packages: taps, formula authoring (Go CLIs and others), tap CI with `brew test-bot`, version bumps, homebrew-core eligibility and submission, the AI/LLM disclosure policy |
 | `sccgo` | **SCCGO — Software Convergence Crafting for Go.** The golang software factory: drive a golang plan from root-caused intent to a CONVERGED, reviewed state via the used-skills protocol, then hand off to SDD execution. Ships `workflows/update-skills.dwf.ts` — a ZCode dynamic workflow that syncs its skill families (samber-cc golang, impeccable, ponytail, hallmark) from their upstream git repos |
+| `mobile-convergence` | The Android software factory: drive a Flutter/Dart plan from root-caused intent to a CONVERGED, reviewed state via the used-skills protocol, then hand off to SDD execution. Battery: the official 25 flutter/dart skills from [flutter/agent-plugins](https://github.com/flutter/agent-plugins) and [dart-lang/skills](https://github.com/dart-lang/skills) |
 
-### sccgo modes and vendored battery
+### Factory modes and vendored batteries
 
 The sccgo plugin ships two skills: `$sccgo` (full — every samber-cc golang skill is seeded
 into USED_SKILLS.json; each seeded skill's own run reports its fit) and `$sccgo-partial`
 (the samber/* core runs always; the rest join as the plan's surfaces demand). Claude Code
 qualifies with `:` (`sccgo:sccgo`, `sccgo:sccgo-partial`); ZCode flattens with `-`.
 
-The battery's upstream repos are vendored as git submodules under `plugins/sccgo/vendor/`
-— provenance reference only, not installed as plugin skills; clone with
-`--recurse-submodules`. A weekly workflow (`.github/workflows/update-3p-skills.yml`) bumps
-the submodule pins to upstream tips and patch-bumps the sccgo version.
+The mobile-convergence plugin ships the same pair for Android: `$mobile-convergence`
+(full — all 25 official flutter/dart skills seeded) and `$mobile-convergence-partial`
+(the flutter/* core runs always; the dart/* skills join as the plan's surfaces demand) —
+`mobile-convergence:mobile-convergence` and `mobile-convergence:mobile-convergence-partial`
+in Claude Code; `-` in ZCode.
+
+The batteries' upstream repos are vendored as git submodules (`plugins/sccgo/vendor/`,
+`plugins/mobile-convergence/vendor/`) — provenance reference only, not installed as plugin
+skills; clone with `--recurse-submodules`. A weekly workflow
+(`.github/workflows/update-3p-skills.yml`) bumps the submodule pins to upstream tips and
+patch-bumps the moved plugin's version.
 
 ## Install
 
@@ -31,17 +39,19 @@ the submodule pins to upstream tips and patch-bumps the sccgo version.
 /plugin marketplace add ConsulTent/ai-skills
 /plugin install ai-skills@consultent-ai-skills
 /plugin install sccgo@consultent-ai-skills
+/plugin install mobile-convergence@consultent-ai-skills
 ```
 
 ### ZCode
 
 Settings → Plugin Management → Discover → **+** → paste
-`https://github.com/ConsulTent/ai-skills` → add the marketplace → install **ai-skills**
-and/or **sccgo**.
+`https://github.com/ConsulTent/ai-skills` → add the marketplace → install **ai-skills**,
+**sccgo** and/or **mobile-convergence**.
 
 ### Generic agents
 
-Copy `plugins/ai-skills/skills/*` and/or `plugins/sccgo/skills/*` into your agent's
+Copy `plugins/ai-skills/skills/*`, `plugins/sccgo/skills/*` and/or
+`plugins/mobile-convergence/skills/*` into your agent's
 skills directory (for example `~/.agents/skills/`). Each skill is a folder with a
 `SKILL.md` and optional `references/` — no runtime or manifests required.
 
