@@ -214,6 +214,22 @@ maintains them — via the npx skills CLI when the family is recorded in `.agent
 `npx skills add <repo> -s <skill> -g -a zcode -a claude-code -y`. Run it via CreateWorkflow with
 its path or by name once saved globally; its verify step confirms the 46-skill samber-cc catalog.
 
+## Enforcement hooks
+
+The plugin ships hooks (`hooks/hooks.json`) that make the convergence battery mechanically
+un-skippable once `$sccgo` is invoked: state lives in `.superpowers/sdd/sccgo-session.json`
+(phase `invoked` → `battery` at plan approval); full mode pre-seeds
+`.superpowers/sdd/sccgo-pending-ledger.json` at approval — move it into the plan's SDD
+workspace as `USED_SKILLS.json` and fill `plan`. The Stop hook gates stopping while any
+skill is `active` (the harness caps continuations; `$sccgo off` exits the contract), and
+SessionStart re-injects the contract after compaction or in any session entering the repo
+mid-flight. The PreToolUse hook also denies ship-shaped git operations (push, merge,
+rebase, PR create/merge) while the battery is pending — the stop gate only nudges (the
+harness caps continuations at 3 per stop-attempt), the ship-gate does not cap. The hook
+displays the current USED_SKILLS.json to the operator as a status message every 3 runs —
+the compaction cadence. The hooks never edit the plan — they gate stopping and inject
+reminders; any hook failure fails open.
+
 ## Hard rules of the factory
 
 - **Symbol citations only** in every markdown the plan touches (`TestX` / `funcName` — never
