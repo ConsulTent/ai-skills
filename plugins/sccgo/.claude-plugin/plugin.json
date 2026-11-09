@@ -1,6 +1,6 @@
 {
   "name": "sccgo",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "The golang software factory: drive a golang plan from root-caused intent to a CONVERGED, reviewed state via the used-skills protocol (USED_SKILLS.json, ponytail-precedence combined runs, pass/remove iterations, zh-CN compactions), with optional craft lenses (impeccable/hallmark) at the AI's discretion, then hand off to SDD execution.",
   "author": {
     "name": "ConsulTent Pte. Ltd.",
