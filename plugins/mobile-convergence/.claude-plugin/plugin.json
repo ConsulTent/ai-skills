@@ -1,6 +1,6 @@
 {
   "name": "mobile-convergence",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "The Android software factory: drive a Flutter/Dart plan from root-caused intent to a CONVERGED, reviewed state via the used-skills protocol (USED_SKILLS.json, ponytail-precedence combined runs, pass/remove iterations, zh-CN compactions), then hand off to SDD execution.",
   "author": {
     "name": "ConsulTent Pte. Ltd.",

@@ -15,13 +15,13 @@
       "name": "sccgo",
       "source": "./plugins/sccgo",
       "description": "The golang software factory: drive a golang plan from root-caused intent to a CONVERGED, reviewed state via the used-skills protocol, then hand off to SDD execution",
-      "version": "0.1.7"
+      "version": "0.1.8"
     },
     {
       "name": "mobile-convergence",
       "source": "./plugins/mobile-convergence",
       "description": "The Android software factory: drive a Flutter/Dart plan from root-caused intent to a CONVERGED, reviewed state via the used-skills protocol, then hand off to SDD execution",
-      "version": "0.1.0"
+      "version": "0.1.1"
     }
   ]
 }
