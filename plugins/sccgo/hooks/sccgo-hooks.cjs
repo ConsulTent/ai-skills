@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // sccgo enforcement hooks — the convergence battery is mechanically un-skippable
-// once $sccgo is invoked. State: <project>/.superpowers/sdd/sccgo-session.json
+// once $sccgo / $sccgo-partial / $sccgo-lite is invoked. State:
+// <project>/.superpowers/sdd/sccgo-session.json
 // (phase "invoked" -> "battery" at plan approval; deleted at CONVERGED or "$sccgo off").
 // Patterns: ponytail (state file, stdin fallback timer, fail-silent) + impeccable
 // (state-driven Stop gate, stop_hook_active guard, harness caps continuations).
@@ -8,7 +9,7 @@
 
 const fs = require("fs");
 const path = require("path");
-const { CATALOG, SEED_EXCLUDE } = require("./sccgo-catalog");
+const { CATALOG, SEED_EXCLUDE, LITE_CATALOG } = require("./sccgo-catalog");
 
 const EVENT = process.argv[2] || "";
 const PROTOCOL =
@@ -87,10 +88,11 @@ function batteryStatus(data) {
   return out;
 }
 
-function seedLedger() {
+function seedLedger(mode) {
+  const list = mode === "lite" ? LITE_CATALOG : CATALOG;
   const skills = {};
-  for (const name of CATALOG) {
-    if (SEED_EXCLUDE.includes(name)) continue;
+  for (const name of list) {
+    if (mode !== "lite" && SEED_EXCLUDE.includes(name)) continue;
     skills[name] = { runs: 0, changes: [], status: "active" };
   }
   return { plan: "", protocol: PROTOCOL, skills, pass_log: [] };
@@ -101,24 +103,29 @@ function seedLedger() {
 function promptSubmit(data) {
   const prompt = (data.prompt || "").trim();
   const project = projectDir(data);
-  if (/[$@/]sccgo(-partial)?\s+off\b/i.test(prompt)) {
+  if (/[$@/]sccgo(-partial|-lite)?\s+off\b/i.test(prompt)) {
     clearState(data);
     inject("UserPromptSubmit", "SCCGO CONTRACT OFF — the convergence gate no longer applies in this repo.");
     return;
   }
-  const m = prompt.match(/[$@/]sccgo(-partial)?\b/i);
+  const m = prompt.match(/[$@/]sccgo(-partial|-lite)?\b/i);
   if (m) {
-    const mode = m[1] ? "partial" : "full";
+    // Case-proof: the regex is /i but the mode compare must not silently arm the
+    // wrong battery on "$SCCGO-LITE" — normalize once, compare exact.
+    const cap = (m[1] || "").toLowerCase();
+    const mode = cap === "-lite" ? "lite" : cap ? "partial" : "full";
     const prev = readState(data);
     writeState(data, {
       mode,
       phase: (prev && prev.phase) || "invoked",
       started_at: (prev && prev.started_at) || new Date().toISOString(),
     });
-    const seed =
-      mode === "full"
-        ? "at plan approval a ledger pre-seeded with every samber-cc golang skill lands in .superpowers/sdd/ — move it into the plan's SDD workspace as USED_SKILLS.json and fill \"plan\"; impeccable/hallmark join per the activation rule"
-        : "seed .superpowers/sdd/<plan>/USED_SKILLS.json with every review skill the plan will use";
+    const SEED_NOTE = {
+      full: "at plan approval a ledger pre-seeded with every samber-cc golang skill lands in .superpowers/sdd/ — move it into the plan's SDD workspace as USED_SKILLS.json and fill \"plan\"; impeccable/hallmark join per the activation rule",
+      partial: "seed .superpowers/sdd/<plan>/USED_SKILLS.json with every review skill the plan will use",
+      lite: "at plan approval a ledger pre-seeded with the lite battery (five skills) lands in .superpowers/sdd/ — move it into the plan's SDD workspace as USED_SKILLS.json and fill \"plan\"; impeccable/hallmark join per the activation rule",
+    };
+    const seed = SEED_NOTE[mode];
     inject(
       "UserPromptSubmit",
       `SCCGO CONTRACT ACTIVE (${mode} battery) — once the plan is approved the convergence loop is mandatory: ${seed}. ` +
@@ -197,18 +204,21 @@ function toolUse(data) {
     writeState(data, state);
   }
   const bat = batteryStatus(data);
-  if (state.mode === "full" && !bat.pending.length) {
+  if ((state.mode === "full" || state.mode === "lite") && !bat.pending.length) {
     fs.mkdirSync(sddDir(data), { recursive: true });
-    fs.writeFileSync(pendingLedgerPath(data), JSON.stringify(seedLedger(), null, 2));
-    const n = CATALOG.length - SEED_EXCLUDE.length;
+    fs.writeFileSync(pendingLedgerPath(data), JSON.stringify(seedLedger(state.mode), null, 2));
+    const what =
+      state.mode === "lite"
+        ? "the lite battery (five skills)"
+        : `${CATALOG.length - SEED_EXCLUDE.length} samber-cc golang skills`;
     inject(
       "PostToolUse",
-      `SCCGO: plan approved — a ledger pre-seeded with ${n} samber-cc golang skills is at .superpowers/sdd/sccgo-pending-ledger.json. ` +
+      `SCCGO: plan approved — a ledger pre-seeded with ${what} is at .superpowers/sdd/sccgo-pending-ledger.json. ` +
         'Move it to .superpowers/sdd/<plan>/USED_SKILLS.json and fill "plan"; add impeccable/hallmark per the activation rule if the plan renders UI. ' +
         "Begin pass 1 now: one skill at a time, $ponytail combined in every run (precedence); a run that produces no plan change removes the skill. " +
         "The stop gate enforces the loop until CONVERGED. $sccgo off exits the contract.",
     );
-  } else if (state.mode === "full") {
+  } else if (state.mode !== "partial") {
     inject("PostToolUse", "SCCGO: plan approved — a ledger is already in flight; continue the convergence loop (the stop gate enforces it).");
   } else {
     inject(

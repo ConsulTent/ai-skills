@@ -55,4 +55,14 @@ const CATALOG = [
 // Orchestrator, never seeded as its own review run (SKILL.md battery).
 const SEED_EXCLUDE = ["golang-how-to"];
 
-module.exports = { CATALOG, SEED_EXCLUDE };
+// The lite-mode seed inventory — the pinned 5-skill battery.
+// EXPECTED 5 — keep in sync with skills/sccgo-lite/SKILL.md.
+const LITE_CATALOG = [
+  "golang-concurrency",
+  "golang-database",
+  "golang-samber-do",
+  "golang-samber-oops",
+  "golang-samber-ro",
+];
+
+module.exports = { CATALOG, SEED_EXCLUDE, LITE_CATALOG };

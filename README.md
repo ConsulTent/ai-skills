@@ -14,10 +14,13 @@ Claude Code plugin, a ZCode plugin, or copied into any agent that supports the
 
 ### Factory modes and vendored batteries
 
-The sccgo plugin ships two skills: `$sccgo` (full — every samber-cc golang skill is seeded
-into USED_SKILLS.json; each seeded skill's own run reports its fit) and `$sccgo-partial`
-(the samber/* core runs always; the rest join as the plan's surfaces demand). Claude Code
-qualifies with `:` (`sccgo:sccgo`, `sccgo:sccgo-partial`); ZCode flattens with `-`.
+The sccgo plugin ships three skills: `$sccgo` (full — every samber-cc golang skill is seeded
+into USED_SKILLS.json; each seeded skill's own run reports its fit), `$sccgo-partial`
+(the samber/* core runs always; the rest join as the plan's surfaces demand), and
+`$sccgo-lite` (five review skills seeded always — golang-samber-do, golang-samber-oops,
+golang-samber-ro, golang-concurrency, golang-database — a small plan converges in ~5 runs).
+Claude Code qualifies with `:` (`sccgo:sccgo`, `sccgo:sccgo-partial`, `sccgo:sccgo-lite`);
+ZCode flattens with `-`.
 
 The mobile-convergence plugin ships the same pair for Android: `$mobile-convergence`
 (full — all 25 official flutter/dart skills seeded) and `$mobile-convergence-partial`

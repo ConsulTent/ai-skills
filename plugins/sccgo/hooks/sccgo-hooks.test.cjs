@@ -7,6 +7,7 @@ const os = require("os");
 const path = require("path");
 
 const HOOK = path.join(__dirname, "sccgo-hooks.cjs");
+const { LITE_CATALOG } = require("./sccgo-catalog");
 let failures = 0;
 let n = 0;
 
@@ -108,6 +109,46 @@ check("stop after off: released", r.code === 0 && r.out === "" && r.err === "", 
 // 11. Partial mode activates distinctly.
 r = run("prompt-submit", { cwd: p, stdin: { prompt: "$sccgo-partial polish this" } });
 check("partial activation", /CONTRACT ACTIVE \(partial battery\)/.test(ctxOf(r) || ""), ctxOf(r));
+
+// 11b. Lite mode: activation, pre-seed by name, off.
+p = project("lite");
+r = run("prompt-submit", { cwd: p, stdin: { prompt: "$sccgo-lite polish this" } });
+check("lite activation", /CONTRACT ACTIVE \(lite battery\)/.test(ctxOf(r) || ""), ctxOf(r));
+check("lite activation names the note body", /pre-seeded with the lite battery \(five skills\)/.test(ctxOf(r) || ""), ctxOf(r));
+check("lite state written", readJSON(path.join(p, ".superpowers", "sdd", "sccgo-session.json")).mode === "lite", "");
+r = run("tool-use", { cwd: p, stdin: {} });
+const liteLed = readJSON(path.join(p, ".superpowers", "sdd", "sccgo-pending-ledger.json"));
+check("lite pre-seed by name (deep-equal LITE_CATALOG)", JSON.stringify(Object.keys(liteLed.skills).sort()) === JSON.stringify(LITE_CATALOG.slice().sort()) && Object.keys(liteLed.skills).length === 5, JSON.stringify(Object.keys(liteLed.skills)));
+check("lite tool-use message names five", /lite battery \(five skills\)/.test(ctxOf(r) || ""), ctxOf(r));
+r = run("tool-use", { cwd: p, stdin: {} });
+check("lite re-approval: in-flight text", /already in flight/.test(ctxOf(r) || ""), ctxOf(r));
+r = run("prompt-submit", { cwd: p, stdin: { prompt: "$sccgo-lite off" } });
+check("$sccgo-lite off clears state", r.code === 0 && /CONTRACT OFF/.test(ctxOf(r) || "") && !fs.existsSync(path.join(p, ".superpowers", "sdd", "sccgo-session.json")), ctxOf(r));
+
+// 11c. Case pin: $SCCGO-LITE arms lite, not full.
+p = project("litecase");
+r = run("prompt-submit", { cwd: p, stdin: { prompt: "plan with $SCCGO-LITE please" } });
+check("case-insensitive lite activation", /CONTRACT ACTIVE \(lite battery\)/.test(ctxOf(r) || ""), ctxOf(r));
+
+// 11d. Partial regression pin: the widened dispatch keeps partial on the AI-seed path.
+p = project("partialpin");
+run("prompt-submit", { cwd: p, stdin: { prompt: "$sccgo-partial polish this" } });
+r = run("tool-use", { cwd: p, stdin: {} });
+check("partial tool-use: seed-instruction message", /seed \.superpowers\/sdd\/<plan>\/USED_SKILLS\.json/.test(ctxOf(r) || ""), ctxOf(r));
+check("partial tool-use: no pending ledger written", !fs.existsSync(path.join(p, ".superpowers", "sdd", "sccgo-pending-ledger.json")), "");
+
+// 11e. Full-side re-approval: the rewritten second arm keeps full in flight.
+p = project("fullflight");
+run("prompt-submit", { cwd: p, stdin: { prompt: "$sccgo" } });
+run("tool-use", { cwd: p, stdin: {} });
+r = run("tool-use", { cwd: p, stdin: {} });
+check("full re-approval: in-flight text", /already in flight/.test(ctxOf(r) || ""), ctxOf(r));
+
+// 11f. Off-regex regression pin: partial activation + $sccgo-partial off clears.
+p = project("liteoff");
+run("prompt-submit", { cwd: p, stdin: { prompt: "$sccgo-partial polish this" } });
+r = run("prompt-submit", { cwd: p, stdin: { prompt: "$sccgo-partial off" } });
+check("$sccgo-partial off clears state", r.code === 0 && /CONTRACT OFF/.test(ctxOf(r) || "") && !fs.existsSync(path.join(p, ".superpowers", "sdd", "sccgo-session.json")), ctxOf(r));
 
 // 12. Ship-gate: PreToolUse denies ship-shaped git ops while pending (uncapped).
 p = project("shipgate");
