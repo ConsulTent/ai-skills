@@ -1,0 +1,13 @@
+{
+  "name": "golang-project-init",
+  "version": "0.1.0",
+  "description": "Scaffold a new golang project from an approved implementation plan — or from an idea, through brainstorming — in the shape golang-decompose carves toward: domains under internal/<domain>/ with model, repository, service and handler layers, role interfaces, stub implementations, wiring in cmd/<app>/main.go, a test per package, the repo files and the doc set — written by the coordinator under golang-code-style, tracked in a ledger, with hooks that keep a scaffold resumable and un-shippable until it is done.",
+  "author": {
+    "name": "ConsulTent Pte. Ltd.",
+    "url": "https://consultent.ltd"
+  },
+  "homepage": "https://github.com/ConsulTent/ai-skills",
+  "repository": "https://github.com/ConsulTent/ai-skills",
+  "license": "MIT",
+  "skills": "./skills"
+}

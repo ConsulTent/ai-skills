@@ -28,6 +28,12 @@
       "source": "./plugins/golang-project-restructuring",
       "description": "Decompose a golang project into SOLID domains: survey, carve with one sub-agent per domain, prove parity in Docker, document, and tag the new major",
       "version": "0.1.0"
+    },
+    {
+      "name": "golang-project-init",
+      "source": "./plugins/golang-project-init",
+      "description": "Scaffold a golang project from an approved plan in the decompose shape: domains with model, repository, service and handler layers, role interfaces, stubs, wiring, repo files and docs",
+      "version": "0.1.0"
     }
   ]
 }

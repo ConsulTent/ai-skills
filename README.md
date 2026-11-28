@@ -12,6 +12,7 @@ Claude Code plugin, a ZCode plugin, or copied into any agent that supports the
 | `sccgo` | **SCCGO — Software Convergence Crafting for Go.** The golang software factory: drive a golang plan from root-caused intent to a CONVERGED, reviewed state via the used-skills protocol, then hand off to SDD execution. Ships `workflows/update-skills.dwf.ts` — a ZCode dynamic workflow that syncs its skill families (samber-cc golang, impeccable, ponytail, hallmark) from their upstream git repos |
 | `mobile-convergence` | The Android software factory: drive a Flutter/Dart plan from root-caused intent to a CONVERGED, reviewed state via the used-skills protocol, then hand off to SDD execution. Battery: the official 25 flutter/dart skills from [flutter/agent-plugins](https://github.com/flutter/agent-plugins) and [dart-lang/skills](https://github.com/dart-lang/skills) |
 | `golang-decompose` | Break a large golang project into SOLID domains sized for independent work: a survey with read-only sub-agents, a domain map for the operator's ruling, a carve with one sub-agent per domain in its own worktree, Dockerfiles generated or updated, end-to-end parity with the original proven by a side-by-side Docker run, cleanup, one README per section, and a new major tag — tracked in a ledger, with hooks that keep a carve resumable and un-shippable until done |
+| `golang-project-init` | Scaffold a new golang project from an approved implementation plan — or from an idea, through brainstorming — in the shape `golang-decompose` carves toward: domains with model, repository, service and handler layers, role interfaces, stubs, wiring, a test per package, the repo files and the doc set, written by the coordinator with `golang-how-to` and `golang-code-style` — tracked in a ledger, with hooks that keep a scaffold resumable and un-shippable until done |
 
 ### Factory modes and vendored batteries
 
@@ -45,19 +46,22 @@ patch-bumps the moved plugin's version.
 /plugin install sccgo@consultent-ai-skills
 /plugin install mobile-convergence@consultent-ai-skills
 /plugin install golang-project-restructuring@consultent-ai-skills
+/plugin install golang-project-init@consultent-ai-skills
 ```
 
 ### ZCode
 
 Settings → Plugin Management → Discover → **+** → paste
 `https://github.com/ConsulTent/ai-skills` → add the marketplace → install **ai-skills**,
-**sccgo**, **mobile-convergence** and/or **golang-project-restructuring**.
+**sccgo**, **mobile-convergence**, **golang-project-restructuring** and/or
+**golang-project-init**.
 
 ### Generic agents
 
 Copy `plugins/ai-skills/skills/*`, `plugins/sccgo/skills/*`,
-`plugins/mobile-convergence/skills/*` and/or
-`plugins/golang-project-restructuring/skills/*` into your agent's
+`plugins/mobile-convergence/skills/*`,
+`plugins/golang-project-restructuring/skills/*` and/or
+`plugins/golang-project-init/skills/*` into your agent's
 skills directory (for example `~/.agents/skills/`). Each skill is a folder with a
 `SKILL.md` and optional `references/` — no runtime or manifests required.
 
