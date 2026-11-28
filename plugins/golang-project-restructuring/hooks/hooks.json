@@ -1,0 +1,67 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/decompose-hooks.cjs\" session-start",
+            "timeout": 5,
+            "statusMessage": "Checking golang-decompose contract"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/decompose-hooks.cjs\" prompt-submit",
+            "timeout": 5,
+            "statusMessage": "Checking golang-decompose contract"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "ExitPlanMode",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/decompose-hooks.cjs\" tool-use",
+            "timeout": 5,
+            "statusMessage": "golang-decompose map approval"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/decompose-hooks.cjs\" pretool-use",
+            "timeout": 5,
+            "statusMessage": "golang-decompose ship-gate"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/decompose-hooks.cjs\" stop",
+            "timeout": 10,
+            "statusMessage": "golang-decompose carve gate"
+          }
+        ]
+      }
+    ]
+  }
+}

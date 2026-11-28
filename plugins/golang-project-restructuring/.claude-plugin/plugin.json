@@ -1,0 +1,13 @@
+{
+  "name": "golang-project-restructuring",
+  "version": "0.1.0",
+  "description": "Break a large golang project into SOLID domains — use-case slices with handler, service, repository and model layers behind role interfaces — sized so each one can be planned, reviewed and improved on its own: surveys every facet with read-only sub-agents, writes a domain map, carves it with one sub-agent per domain in its own worktree, generates or updates Dockerfiles, proves parity with the original in a side-by-side Docker run, cleans up, documents, and tags the new major — all under a ledger, with hooks that keep a carve resumable and un-shippable until it is done.",
+  "author": {
+    "name": "ConsulTent Pte. Ltd.",
+    "url": "https://consultent.ltd"
+  },
+  "homepage": "https://github.com/ConsulTent/ai-skills",
+  "repository": "https://github.com/ConsulTent/ai-skills",
+  "license": "MIT",
+  "skills": "./skills"
+}
